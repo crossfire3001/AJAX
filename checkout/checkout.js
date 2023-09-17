@@ -16,31 +16,33 @@
       form.classList.add('was-validated')
     }, false)
   }) */
-
+  let loader = $('.loader');
   $("#redeem").click(function () {
-    let url = "http://testologia.site/promo-code?name=" + $("#promo-code").val();
+    let promoInput = $("#promo-code");
+    let url = "http://testologia.site/promo-code?name=" + promoInput.val();
 
     let http = new XMLHttpRequest();
     http.open("get", url);
     http.send();
+    promoInput.css("border-color", "black");
+    loader.css("display", "flex");
+    $.ajax({
+      method: "GET",
+      url: url,
+    }).done(function( message ) {
+          loader.hide();
+          let promoElement = $("#promocode");
+          // проверка на существование промокода
+          if (message && message.hasOwnProperty("amount")) {
+            promoElement.removeClass("d-none").addClass("d-flex");
+            promoElement.find("small").text(promoInput.val().toUpperCase());
+            promoElement.find("span.text-success").text("-$" + message.amount);
+          } else {
+            promoElement.removeClass("d-flex").addClass("d-none");
+            promoInput.css("border-color", "red");
+          }
+        });
 
-    http.onreadystatechange = () => {
-    if (http.readyState === 4 && http.status === 200)  {
-
-      let result = null;
-      try {
-        result = JSON.parse(http.responseText);
-      } catch (e) {}
-
-      // проверка на существование промокода
-      if (result) {
-        $("#promocode").removeClass("d-none").addClass("d-flex");
-      } else {
-
-      }
-
-    }
-    }
   })
 
 })()
